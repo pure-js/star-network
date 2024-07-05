@@ -1,13 +1,19 @@
-# Welcome to Remix!
+# Sta Network
 
-- 📖 [Remix docs](https://remix.run/docs)
+## Tech stack
+
+- React
+- TypeScript
+- Remix
+- TailwindCSS
+- Shadcn/UI
 
 ## Development
 
 Run the dev server:
 
 ```shellscript
-npm run dev
+pnpm run dev
 ```
 
 ## Deployment
@@ -15,13 +21,13 @@ npm run dev
 First, build your app for production:
 
 ```sh
-npm run build
+pnpm run build
 ```
 
 Then run the app in production mode:
 
 ```sh
-npm start
+pnpm start
 ```
 
 Now you'll need to pick a host to deploy it to.
