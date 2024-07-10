@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [
     remix({
       ssr: false,
-      basename: '/star-network',
+      basename: '/star-network/',
       future: {
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
