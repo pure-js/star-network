@@ -1,10 +1,11 @@
-# Sta Network
+# Star Network
 
 ## Tech stack
 
 - React
 - TypeScript
 - Remix
+- TanStack Query
 - TailwindCSS
 - Shadcn/UI
 
