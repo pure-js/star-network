@@ -8,6 +8,14 @@
 - TanStack Query
 - TailwindCSS
 - Shadcn/UI
+- Playwright
+- Vitest
+
+## About
+
+It consists of two pages.
+The main page displays a list with character cards, the list has the ability to page through and search using API.
+The next page with detailed information about the selected character. On this page it is possible to edit and save information about the character locally without sending it to the server.
 
 ## Development
 
