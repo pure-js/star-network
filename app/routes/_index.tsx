@@ -1,11 +1,12 @@
 import type { MetaFunction } from '@remix-run/node';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from '@remix-run/react';
+import { Link, useSearchParams } from '@remix-run/react';
+import { ExclamationTriangleIcon, PersonIcon } from '@radix-ui/react-icons';
 
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-
 import {
   Card,
   CardContent,
@@ -14,25 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-import fetch from '~/api/getCharacters';
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: 'Star Network' },
-    { name: 'description', content: 'Find your Hero!' },
-  ];
-};
-
-export function Search() {
-  return (
-    <div className="flex w-full max-w-sm items-center space-x-2 mx-auto mt-8 mb-4">
-      <Input type="search" />
-      <Button type="submit">Search</Button>
-    </div>
-  );
-}
-
 import {
   Pagination,
   PaginationContent,
@@ -43,22 +25,77 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination';
 
-const pages = [
-  { isActive: false, number: 1, id: 1 },
-  { isActive: true, number: 2, id: 2 },
-  { isActive: false, number: 3, id: 3 },
-];
+import fetch from '~/api/getCharacters';
+import { cn } from '@/lib/utils';
 
-export function HeroPagination() {
+export const meta: MetaFunction = () => {
+  return [
+    { title: 'Star Network' },
+    { name: 'description', content: 'Find your Hero!' },
+  ];
+};
+
+export function Search() {
+  const query = 1;
+  const { status, error, data, refetch } = useQuery({
+    queryKey: ['characters'],
+    queryFn: () => fetch(`https://swapi.dev/api/search/?search=${query}`),
+    enabled: false,
+  });
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    // Prevent the browser from reloading the page
+    e.preventDefault();
+
+    // Read the form data
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+
+    // You can pass formData as a fetch body directly:
+    // fetch('/some-api', { body: formData });
+    refetch();
+
+    // Or you can work with it as a plain object:
+    const formJson = Object.fromEntries(formData.entries());
+    console.log(formJson);
+  }
   return (
-    <Pagination className="mt-4 mb-4">
+    <form
+      onSubmit={handleSubmit}
+      className="flex w-full max-w-sm items-center space-x-2 mx-auto mt-8 mb-4"
+    >
+      <Input
+        className="placeholder:text-slate-300"
+        name="searchInput"
+        type="search"
+        placeholder="Seacrh by name"
+      />
+      <Button type="submit">Search</Button>
+    </form>
+  );
+}
+
+export function CharactersPagination({
+  className,
+  pages,
+  lastPage,
+}: {
+  className: string;
+  pages: Array<{ number: number }>;
+  lastPage: number;
+}) {
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get('p') ? Number(searchParams.get('p')) : 1;
+
+  return (
+    <Pagination className={cn('mt-4 mb-4', className)}>
       <PaginationContent>
-        <PaginationItem>
+        <PaginationItem className={page <= 1 ? 'opacity-40' : ''}>
           <PaginationPrevious href="#" />
         </PaginationItem>
-        {pages.map(({ number, id, isActive }) => (
-          <PaginationItem key={id}>
-            <PaginationLink href="#" isActive={isActive}>
+        {pages.map(({ number }) => (
+          <PaginationItem key={number}>
+            <PaginationLink href="#" isActive={page === number ? true : false}>
               {number}
             </PaginationLink>
           </PaginationItem>
@@ -66,7 +103,7 @@ export function HeroPagination() {
         <PaginationItem>
           <PaginationEllipsis />
         </PaginationItem>
-        <PaginationItem>
+        <PaginationItem className={page === lastPage ? 'opacity-40' : ''}>
           <PaginationNext href="#" />
         </PaginationItem>
       </PaginationContent>
@@ -86,38 +123,99 @@ export function SkeletonCard() {
   );
 }
 
-export default function Index() {
+export function AlertDestructive({ msg }: { msg: Error }) {
+  return (
+    <Alert variant="destructive">
+      <ExclamationTriangleIcon className="h-4 w-4" />
+      <AlertTitle>Error</AlertTitle>
+      <AlertDescription>{`${msg}`}</AlertDescription>
+    </Alert>
+  );
+}
+
+interface IPerson {
+  name: string;
+  height: number;
+  url: string;
+  mass: number;
+  hair_color: string;
+  skin_color: string;
+  eye_color: string;
+  birth_year: number;
+  gender: string;
+}
+
+export function CharacterList() {
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get('p') ? Number(searchParams.get('p')) : 1;
   const { status, error, data } = useQuery({
     queryKey: ['characters'],
-    queryFn: () => fetch(`https://swapi.dev/api/people/`),
+    queryFn: () => fetch(`https://swapi.dev/api/people/?page=${page}`),
   });
   if (status === 'pending') return <SkeletonCard />;
-  if (status === 'error') return <p>Error :(</p>;
-
+  if (status === 'error') return <AlertDestructive msg={error} />;
+  const itemsPerPage = 10;
+  const lastPage = Math.ceil(data.count / itemsPerPage);
+  const firstPage = 1;
+  const pages = [];
+  pages.push({ number: firstPage, link: '1' });
+  if (page !== firstPage) {
+    pages.push({ number: page, link: '' });
+  }
+  if (page !== lastPage) {
+    pages.push({ number: lastPage, link: '' });
+  }
   return (
-    <div className="container mx-auto">
-      <Search />
-      <h2 className="h2">Characters</h2>
-      {data.results.map((person) => {
+    <>
+      {data.results.map((person: IPerson) => {
         const personUrlParts = person.url.split('/').filter(Boolean);
         const personId = personUrlParts[personUrlParts.length - 1];
         return (
-          <Card key={personId} className="w-[350px] mb-4">
+          <Card key={personId} className="w-full max-w-[350px] mb-4">
             <CardHeader>
-              <CardTitle>{person.name}</CardTitle>
+              <CardTitle>
+                <PersonIcon className="inline-block mr-2" />
+                {person.name}
+              </CardTitle>
               <CardDescription>Card Description</CardDescription>
             </CardHeader>
             <CardContent>
               <p>Card Content</p>
+              <p>{person.height}</p>
+              <p>{person.mass}</p>
+              <p>{person.hair_color}</p>
+              <p>{person.skin_color}</p>
+              <p>{person.eye_color}</p>
+              <p>{person.birth_year}</p>
+              <p>{person.gender}</p>
             </CardContent>
             <CardFooter>
-              <p>Card Footer</p>
-              <Link to={`/characters/${personId}`}>more details</Link>;
+              <Button asChild variant="outline">
+                <Link className="w-full" to={`/characters/${personId}`}>
+                  More details
+                </Link>
+              </Button>
             </CardFooter>
           </Card>
         );
       })}
-      <HeroPagination />
+      <CharactersPagination
+        className="mt-auto"
+        pages={pages}
+        lastPage={lastPage}
+      />
+    </>
+  );
+}
+
+export default function Index() {
+  return (
+    <div className="container mx-auto min-h-lvh flex flex-col">
+      <Search />
+      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 mt-8">
+        Characters
+      </h1>
+      <CharacterList />
     </div>
   );
 }

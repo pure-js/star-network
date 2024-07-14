@@ -25,6 +25,12 @@ Run the dev server:
 pnpm run dev
 ```
 
+Open the url
+
+```sh
+http://localhost:5173/star-network/
+```
+
 ## Deployment
 
 First, build your app for production:
