@@ -1,12 +1,12 @@
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import type { MetaFunction } from '@remix-run/node';
-import { useQuery } from '@tanstack/react-query';
 import { Link, useSearchParams } from '@remix-run/react';
-import { ExclamationTriangleIcon, PersonIcon } from '@radix-ui/react-icons';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { Pie, PieChart } from 'recharts';
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
+import fetch from '~/api/getCharacters';
+import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
+import { Button } from '~/components/ui/button';
 import {
   Card,
   CardContent,
@@ -14,7 +14,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
+} from '~/components/ui/card';
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '~/components/ui/chart';
+import { Input } from '~/components/ui/input';
 import {
   Pagination,
   PaginationContent,
@@ -23,10 +30,9 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/pagination';
-
-import fetch from '~/api/getCharacters';
-import { cn } from '@/lib/utils';
+} from '~/components/ui/pagination';
+import { Skeleton } from '~/components/ui/skeleton';
+import { cn, getIdbyUrl } from '~/lib/utils';
 
 export const meta: MetaFunction = () => {
   return [
@@ -39,7 +45,7 @@ export function Search() {
   const query = 1;
   const { status, error, data, refetch } = useQuery({
     queryKey: ['characters'],
-    queryFn: () => fetch(`https://swapi.dev/api/search/?search=${query}`),
+    queryFn: () => fetch(`https://swapi.dev/api/people/?search=${query}`),
     enabled: false,
   });
 
@@ -133,6 +139,12 @@ export function AlertDestructive({ msg }: { msg: Error }) {
   );
 }
 
+const chartData = [
+  { part: 'hair', proportion: 275, fill: 'var(--color-hair)' },
+  { part: 'skin', proportion: 200, fill: 'var(--color-skin)' },
+  { part: 'eyes', proportion: 187, fill: 'var(--color-eyes)' },
+];
+
 interface IPerson {
   name: string;
   height: number;
@@ -149,8 +161,9 @@ export function CharacterList() {
   const [searchParams] = useSearchParams();
   const page = searchParams.get('p') ? Number(searchParams.get('p')) : 1;
   const { status, error, data } = useQuery({
-    queryKey: ['characters'],
+    queryKey: ['characters', { page }],
     queryFn: () => fetch(`https://swapi.dev/api/people/?page=${page}`),
+    placeholderData: keepPreviousData,
   });
   if (status === 'pending') return <SkeletonCard />;
   if (status === 'error') return <AlertDestructive msg={error} />;
@@ -167,38 +180,70 @@ export function CharacterList() {
   }
   return (
     <>
-      {data.results.map((person: IPerson) => {
-        const personUrlParts = person.url.split('/').filter(Boolean);
-        const personId = personUrlParts[personUrlParts.length - 1];
-        return (
-          <Card key={personId} className="w-full max-w-[350px] mb-4">
-            <CardHeader>
-              <CardTitle>
-                <PersonIcon className="inline-block mr-2" />
-                {person.name}
-              </CardTitle>
-              <CardDescription>Card Description</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-              <p>{person.height}</p>
-              <p>{person.mass}</p>
-              <p>{person.hair_color}</p>
-              <p>{person.skin_color}</p>
-              <p>{person.eye_color}</p>
-              <p>{person.birth_year}</p>
-              <p>{person.gender}</p>
-            </CardContent>
-            <CardFooter>
-              <Button asChild variant="outline">
-                <Link className="w-full" to={`/characters/${personId}`}>
-                  More details
-                </Link>
-              </Button>
-            </CardFooter>
-          </Card>
-        );
-      })}
+      <div className="place-content-center grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {data.results.map((person: IPerson) => {
+          const personId = getIdbyUrl(person.url);
+          const chartConfig = {
+            hair: {
+              label: 'Hairs',
+              color: person.hair_color,
+            },
+            skin: {
+              label: 'Skin',
+              color: person.skin_color,
+            },
+            eyes: {
+              label: 'Eyes',
+              color: person.eye_color,
+            },
+          } satisfies ChartConfig;
+          return (
+            <Card key={personId} className="w-full">
+              <CardHeader>
+                <CardTitle className="text-2xl">
+                  {/* <PersonIcon className="inline-block mr-2" /> */}
+                  {person.name}
+                </CardTitle>
+                <CardDescription>Card Description</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChartContainer
+                  config={chartConfig}
+                  className="mx-auto aspect-square max-h-[250px]"
+                >
+                  <PieChart>
+                    <ChartTooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Pie
+                      data={chartData}
+                      dataKey="proportion"
+                      nameKey="part"
+                      innerRadius={60}
+                    />
+                  </PieChart>
+                </ChartContainer>
+                <p>Card Content</p>
+                <p>{person.height}</p>
+                <p>{person.mass}</p>
+                <p>{person.hair_color}</p>
+                <p>{person.skin_color}</p>
+                <p>{person.eye_color}</p>
+                <p>{person.birth_year}</p>
+                <p>{person.gender}</p>
+              </CardContent>
+              <CardFooter>
+                <Button asChild variant="outline">
+                  <Link className="self-center" to={`/characters/${personId}`}>
+                    More details
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
+      </div>
       <CharactersPagination
         className="mt-auto"
         pages={pages}
@@ -212,7 +257,7 @@ export default function Index() {
   return (
     <div className="container mx-auto min-h-lvh flex flex-col">
       <Search />
-      <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 mt-8">
+      <h1 className="text-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 mt-8">
         Characters
       </h1>
       <CharacterList />
