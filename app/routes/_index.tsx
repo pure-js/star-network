@@ -44,7 +44,7 @@ export const meta: MetaFunction = () => {
 export function Search() {
   const query = 1;
   const { status, error, data, refetch } = useQuery({
-    queryKey: ['characters'],
+    queryKey: ['characters', { query }],
     queryFn: () => fetch(`https://swapi.dev/api/people/?search=${query}`),
     enabled: false,
   });
@@ -181,68 +181,83 @@ export function CharacterList() {
   return (
     <>
       <div className="place-content-center grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-        {data.results.map((person: IPerson) => {
-          const personId = getIdbyUrl(person.url);
-          const chartConfig = {
-            hair: {
-              label: 'Hairs',
-              color: person.hair_color,
-            },
-            skin: {
-              label: 'Skin',
-              color: person.skin_color,
-            },
-            eyes: {
-              label: 'Eyes',
-              color: person.eye_color,
-            },
-          } satisfies ChartConfig;
-          return (
-            <Card key={personId} className="w-full">
-              <CardHeader>
-                <CardTitle className="text-2xl">
-                  {/* <PersonIcon className="inline-block mr-2" /> */}
-                  {person.name}
-                </CardTitle>
-                <CardDescription>Card Description</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ChartContainer
-                  config={chartConfig}
-                  className="mx-auto aspect-square max-h-[250px]"
-                >
-                  <PieChart>
-                    <ChartTooltip
-                      cursor={false}
-                      content={<ChartTooltipContent hideLabel />}
-                    />
-                    <Pie
-                      data={chartData}
-                      dataKey="proportion"
-                      nameKey="part"
-                      innerRadius={60}
-                    />
-                  </PieChart>
-                </ChartContainer>
-                <p>Card Content</p>
-                <p>{person.height}</p>
-                <p>{person.mass}</p>
-                <p>{person.hair_color}</p>
-                <p>{person.skin_color}</p>
-                <p>{person.eye_color}</p>
-                <p>{person.birth_year}</p>
-                <p>{person.gender}</p>
-              </CardContent>
-              <CardFooter>
-                <Button asChild variant="outline">
-                  <Link className="self-center" to={`/characters/${personId}`}>
-                    More details
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          );
-        })}
+        {data.results.map(
+          ({
+            name,
+            height,
+            mass,
+            hair_color: hairColor,
+            skin_color: skinColor,
+            eye_color: eyeColor,
+            url,
+            birth_year: birthYear,
+            gender,
+          }: IPerson) => {
+            const personId = getIdbyUrl(url);
+            const chartConfig = {
+              hair: {
+                label: 'Hairs',
+                color: hairColor,
+              },
+              skin: {
+                label: 'Skin',
+                color: skinColor,
+              },
+              eyes: {
+                label: 'Eyes',
+                color: eyeColor,
+              },
+            } satisfies ChartConfig;
+            return (
+              <Card key={personId} className="w-full">
+                <CardHeader>
+                  <CardTitle className="text-2xl">
+                    {/* <PersonIcon className="inline-block mr-2" /> */}
+                    {name}
+                  </CardTitle>
+                  <CardDescription>Card Description</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ChartContainer
+                    config={chartConfig}
+                    className="mx-auto aspect-square max-h-[250px]"
+                  >
+                    <PieChart>
+                      <ChartTooltip
+                        cursor={false}
+                        content={<ChartTooltipContent hideLabel />}
+                      />
+                      <Pie
+                        data={chartData}
+                        dataKey="proportion"
+                        nameKey="part"
+                        innerRadius={60}
+                      />
+                    </PieChart>
+                  </ChartContainer>
+                  <p>Card Content</p>
+                  <p>{height}</p>
+                  <p>{mass}</p>
+                  <p>{hairColor}</p>
+                  <p>{skinColor}</p>
+                  <p>{eyeColor}</p>
+                  <p>{birthYear}</p>
+                  <p>{gender}</p>
+                </CardContent>
+                <CardFooter>
+                  <Button asChild variant="outline">
+                    <Link
+                      className="self-center"
+                      to={`/characters/${personId}`}
+                    >
+                      More details
+                    </Link>
+                  </Button>
+                </CardFooter>
+              </Card>
+            );
+          },
+        )}
       </div>
       <CharactersPagination
         className="mt-auto"

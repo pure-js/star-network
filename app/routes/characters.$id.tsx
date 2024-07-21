@@ -58,19 +58,17 @@ export function CharacterTable() {
     queryKey: ['characters', { characterId }],
     queryFn: () => fetch(`https://swapi.dev/api/people/${characterId}`),
     placeholderData: keepPreviousData,
-    // initialData: () => {
-    // Use a todo from the 'todos' query as the initial data for this todo query
-    // const data = queryClient.getQueryData(['characters', { page }]);
-    // console.log('dd', data);
-    // return data?.results[characterId].find(
-    //   (d) => getIdbyUrl(d.url) === characterId,
-    // );
-    // },
+    initialData: () => {
+      const data = queryClient.getQueryData(['characters', { page }]);
+      return data?.results.find(
+        (character) => getIdbyUrl(character.url) === characterId,
+      );
+    },
   });
 
   if (status === 'pending') return <SkeletonCard />;
   if (status === 'error') return <AlertDestructive msg={error} />;
-  console.log('a', data);
+
   return (
     <Table>
       <TableCaption>A list of your characteristics</TableCaption>
