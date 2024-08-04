@@ -66,18 +66,30 @@ export function Search() {
     console.log(formJson);
   }
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex w-full max-w-sm items-center space-x-2 mx-auto mt-8 mb-4"
-    >
-      <Input
-        className="placeholder:text-slate-300"
-        name="searchInput"
-        type="search"
-        placeholder="Seacrh by name"
-      />
-      <Button type="submit">Search</Button>
-    </form>
+    <>
+      <form
+        onSubmit={handleSubmit}
+        className="flex w-full max-w-sm items-center space-x-2 mx-auto mt-8 mb-4"
+      >
+        <Input
+          className="placeholder:text-slate-300"
+          name="searchInput"
+          type="search"
+          placeholder="Seacrh by name"
+        />
+        <Button type="submit">Search</Button>
+      </form>
+
+      {data?.results.map((person: ICharacter) => {
+        const personUrlParts = person.url.split('/').filter(Boolean);
+        const personId = personUrlParts[personUrlParts.length - 1];
+        return (
+          <article key={personId} className="mt-4">
+            <h1>{person.name}</h1>
+          </article>
+        );
+      })}
+    </>
   );
 }
 
@@ -145,7 +157,7 @@ const chartData = [
   { part: 'eyes', proportion: 187, fill: 'var(--color-eyes)' },
 ];
 
-interface IPerson {
+export interface ICharacter {
   name: string;
   height: number;
   url: string;
@@ -192,7 +204,7 @@ export function CharacterList() {
             url,
             birth_year: birthYear,
             gender,
-          }: IPerson) => {
+          }: ICharacter) => {
             const personId = getIdbyUrl(url);
             const chartConfig = {
               hair: {
