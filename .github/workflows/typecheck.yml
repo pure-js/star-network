@@ -1,4 +1,4 @@
-name: Production Build
+name: Type Check
 
 on: push
 
@@ -18,5 +18,5 @@ jobs:
           cache: 'pnpm'
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      - name: Build
-        run: pnpm build
+      - name: Type Check
+        run: pnpm typecheck

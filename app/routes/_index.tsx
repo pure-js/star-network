@@ -80,7 +80,7 @@ export function Search() {
         <Button type="submit">Search</Button>
       </form>
 
-      {data?.results.map((person) => {
+      {data?.results.map((person: ICharacter) => {
         const personUrlParts = person.url.split('/').filter(Boolean);
         const personId = personUrlParts[personUrlParts.length - 1];
         return (
@@ -157,7 +157,7 @@ const chartData = [
   { part: 'eyes', proportion: 187, fill: 'var(--color-eyes)' },
 ];
 
-interface IPerson {
+export interface ICharacter {
   name: string;
   height: number;
   url: string;
@@ -204,7 +204,7 @@ export function CharacterList() {
             url,
             birth_year: birthYear,
             gender,
-          }: IPerson) => {
+          }: ICharacter) => {
             const personId = getIdbyUrl(url);
             const chartConfig = {
               hair: {

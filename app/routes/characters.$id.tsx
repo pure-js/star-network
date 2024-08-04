@@ -26,6 +26,7 @@ import {
   TableRow,
 } from '~/components/ui/table';
 import { getIdbyUrl } from '~/lib/utils';
+import type { ICharacter } from '~/routes/_index';
 import { AlertDestructive, SkeletonCard } from '~/routes/_index';
 
 const invoices = [
@@ -59,16 +60,16 @@ const invoices = [
   },
 ];
 
-export function CharacterTable({ data }) {
+export function CharacterTable({ data }: { data: ICharacter }) {
   return (
     <Table>
       <TableCaption>A list of your characteristics</TableCaption>
-      {/* <TableHeader>
+      <TableHeader>
         <TableRow>
-          <TableHead className="w-[100px]">Invoice</TableHead>
-          <TableHead>{data?.gender}</TableHead>
+          <TableHead className="w-[100px]"></TableHead>
+          <TableHead className="w-[100px]"></TableHead>
         </TableRow>
-      </TableHeader> */}
+      </TableHeader>
       <TableBody>
         {/* {invoices.map((invoice) => (
           <TableRow key={invoice.invoice}>
@@ -152,7 +153,7 @@ export default function Character() {
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <h1>{data?.name}</h1>
+      <h1 className="text-4xl font-extrabold lg:text-5xl">{data?.name}</h1>
       <CharacterTable data={data} />
       <Link to={`edit`}>
         <Pencil1Icon />
