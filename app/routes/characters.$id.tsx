@@ -29,6 +29,8 @@ import { getIdbyUrl } from '~/lib/utils';
 import type { ICharacter } from '~/routes/_index';
 import { AlertDestructive, SkeletonCard } from '~/routes/_index';
 
+import { ICharacters } from './characters.$id.edit';
+
 const invoices = [
   {
     invoice: 'INV001',
@@ -123,15 +125,24 @@ export default function Character() {
     queryFn: () => fetch(`https://swapi.dev/api/people/${characterId}`),
     placeholderData: keepPreviousData,
     initialData: () => {
-      const data = queryClient.getQueryData(['characters', { page }]);
+      const data: ICharacters | undefined = queryClient.getQueryData([
+        'characters',
+        { page },
+      ]);
       return data?.results.find(
-        (character) => getIdbyUrl(character.url) === characterId,
+        (character: ICharacter) => getIdbyUrl(character.url) === characterId,
       );
     },
   });
 
-  if (status === 'pending') return <SkeletonCard />;
-  if (status === 'error') return <AlertDestructive msg={error} />;
+  // if (status === 'pending')
+  // if (status === 'error') return <AlertDestructive msg={error} />;
+  switch (status) {
+    case 'error':
+      return <AlertDestructive msg={error} />;
+    case 'pending':
+      return <SkeletonCard />;
+  }
   return (
     <div className="container mx-auto min-h-lvh flex flex-col">
       <div className="mt-4 mb-4">

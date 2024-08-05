@@ -2,9 +2,9 @@ import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
 import type { MetaFunction } from '@remix-run/node';
 import { Link, useSearchParams } from '@remix-run/react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
-import { Pie, PieChart } from 'recharts';
 
 import fetch from '~/api/getCharacters';
+import Jonathan from '~/assets/Jonathan-Rey-Star-Wars-Characters-Ahsoka-Tano.256.webp';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import {
@@ -15,12 +15,6 @@ import {
   CardHeader,
   CardTitle,
 } from '~/components/ui/card';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '~/components/ui/chart';
 import { Input } from '~/components/ui/input';
 import {
   Pagination,
@@ -151,12 +145,6 @@ export function AlertDestructive({ msg }: { msg: Error }) {
   );
 }
 
-const chartData = [
-  { part: 'hair', proportion: 275, fill: 'var(--color-hair)' },
-  { part: 'skin', proportion: 200, fill: 'var(--color-skin)' },
-  { part: 'eyes', proportion: 187, fill: 'var(--color-eyes)' },
-];
-
 export interface ICharacter {
   name: string;
   height: number;
@@ -206,20 +194,6 @@ export function CharacterList() {
             gender,
           }: ICharacter) => {
             const personId = getIdbyUrl(url);
-            const chartConfig = {
-              hair: {
-                label: 'Hairs',
-                color: hairColor,
-              },
-              skin: {
-                label: 'Skin',
-                color: skinColor,
-              },
-              eyes: {
-                label: 'Eyes',
-                color: eyeColor,
-              },
-            } satisfies ChartConfig;
             return (
               <Card key={personId} className="w-full">
                 <CardHeader>
@@ -230,23 +204,7 @@ export function CharacterList() {
                   <CardDescription>Card Description</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ChartContainer
-                    config={chartConfig}
-                    className="mx-auto aspect-square max-h-[250px]"
-                  >
-                    <PieChart>
-                      <ChartTooltip
-                        cursor={false}
-                        content={<ChartTooltipContent hideLabel />}
-                      />
-                      <Pie
-                        data={chartData}
-                        dataKey="proportion"
-                        nameKey="part"
-                        innerRadius={60}
-                      />
-                    </PieChart>
-                  </ChartContainer>
+                  <img src={Jonathan} />
                   <p>Card Content</p>
                   <p>{height}</p>
                   <p>{mass}</p>

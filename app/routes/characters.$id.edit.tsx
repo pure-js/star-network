@@ -17,7 +17,7 @@ import {
   TableRow,
 } from '~/components/ui/table';
 import { getIdbyUrl } from '~/lib/utils';
-import { AlertDestructive, SkeletonCard } from '~/routes/_index';
+import { AlertDestructive, ICharacter, SkeletonCard } from '~/routes/_index';
 
 const invoices = [
   {
@@ -50,6 +50,10 @@ const invoices = [
   },
 ];
 
+export type ICharacters = {
+  results: ICharacter[];
+};
+
 export function CharacterTable() {
   const page = 1;
   const characterId = 1;
@@ -59,9 +63,12 @@ export function CharacterTable() {
     queryFn: () => fetch(`https://swapi.dev/api/people/${characterId}`),
     placeholderData: keepPreviousData,
     initialData: () => {
-      const data = queryClient.getQueryData(['characters', { page }]);
+      const data: ICharacters | undefined = queryClient.getQueryData([
+        'characters',
+        { page },
+      ]);
       return data?.results.find(
-        (character) => getIdbyUrl(character.url) === characterId,
+        (character: ICharacter) => getIdbyUrl(character.url) === characterId,
       );
     },
   });
