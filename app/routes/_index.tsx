@@ -165,8 +165,17 @@ export function CharacterList() {
     queryFn: () => fetch(`https://swapi.dev/api/people/?page=${page}`),
     placeholderData: keepPreviousData,
   });
-  if (status === 'pending') return <SkeletonCard />;
   if (status === 'error') return <AlertDestructive msg={error} />;
+  const expectingItems = Array.from(Array(10));
+
+  if (status === 'pending')
+    return (
+      <div className="place-content-center grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {expectingItems.map(() => (
+          <SkeletonCard />
+        ))}
+      </div>
+    );
   const itemsPerPage = 10;
   const lastPage = Math.ceil(data.count / itemsPerPage);
   const firstPage = 1;
@@ -181,17 +190,18 @@ export function CharacterList() {
   return (
     <>
       <div className="place-content-center grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        {status === 'pending' && expectingItems.map(() => <SkeletonCard />)}
         {data.results.map(
           ({
             name,
-            height,
-            mass,
-            hair_color: hairColor,
-            skin_color: skinColor,
-            eye_color: eyeColor,
+            // height,
+            // mass,
+            // hair_color: hairColor,
+            // skin_color: skinColor,
+            // eye_color: eyeColor,
             url,
-            birth_year: birthYear,
-            gender,
+            // birth_year: birthYear,
+            // gender,
           }: ICharacter) => {
             const personId = getIdbyUrl(url);
             return (
