@@ -195,26 +195,33 @@ export function CharacterList() {
           }: ICharacter) => {
             const personId = getIdbyUrl(url);
             return (
-              <Card key={personId} className="w-full">
-                <CardHeader>
-                  <CardTitle className="text-2xl">
-                    {/* <PersonIcon className="inline-block mr-2" /> */}
-                    {name}
-                  </CardTitle>
-                  <CardDescription>Card Description</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <img src={Jonathan} />
-                  <p>Card Content</p>
+              <Link key={personId} to={`/characters/${personId}`}>
+                <Card key={personId} className="w-full bg-cardr">
+                  <CardHeader>
+                    <CardTitle className="text-2xl">
+                      {/* <PersonIcon className="inline-block mr-2" /> */}
+                      {name}
+                    </CardTitle>
+                    {/* <CardDescription>Card Description</CardDescription> */}
+                  </CardHeader>
+                  <CardContent>
+                    <img
+                      className="block mx-auto"
+                      alt={name}
+                      width={256}
+                      height={256}
+                      src={Jonathan}
+                    />
+                    {/* <p>Card Content</p>
                   <p>{height}</p>
                   <p>{mass}</p>
                   <p>{hairColor}</p>
                   <p>{skinColor}</p>
                   <p>{eyeColor}</p>
                   <p>{birthYear}</p>
-                  <p>{gender}</p>
-                </CardContent>
-                <CardFooter>
+                  <p>{gender}</p> */}
+                  </CardContent>
+                  {/* <CardFooter>
                   <Button asChild variant="outline">
                     <Link
                       className="self-center"
@@ -223,8 +230,9 @@ export function CharacterList() {
                       More details
                     </Link>
                   </Button>
-                </CardFooter>
-              </Card>
+                </CardFooter> */}
+                </Card>
+              </Link>
             );
           },
         )}
@@ -242,7 +250,7 @@ export default function Index() {
   return (
     <div className="container mx-auto min-h-lvh flex flex-col">
       <Search />
-      <h1 className="text-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-6 mt-8">
+      <h1 className="text-center scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl mb-8 mt-10">
         Characters
       </h1>
       <CharacterList />
