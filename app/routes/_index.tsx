@@ -7,14 +7,7 @@ import fetch from '~/api/getCharacters';
 import Jonathan from '~/assets/Jonathan-Rey-Star-Wars-Characters-Ahsoka-Tano.256.webp';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
 import { Input } from '~/components/ui/input';
 import {
   Pagination,
@@ -189,7 +182,7 @@ export function CharacterList() {
   }
   return (
     <>
-      <div className="place-content-center grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+      <div className="place-content-center grid grid-flow-row-dense grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-4">
         {status === 'pending' && expectingItems.map(() => <SkeletonCard />)}
         {data.results.map(
           ({
@@ -208,7 +201,7 @@ export function CharacterList() {
               <Link key={personId} to={`/characters/${personId}`}>
                 <Card key={personId} className="w-full bg-cardr">
                   <CardHeader>
-                    <CardTitle className="text-2xl">
+                    <CardTitle className="text-2xl text-center">
                       {/* <PersonIcon className="inline-block mr-2" /> */}
                       {name}
                     </CardTitle>
