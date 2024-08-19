@@ -5,6 +5,9 @@ import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import fetch from '~/api/getCharacters';
 import Jonathan from '~/assets/Jonathan-Rey-Star-Wars-Characters-Ahsoka-Tano.256.webp';
+import Chewbacca from '~/assets/Jonathan-Rey-Star-Wars-Characters-Chewbacca.256.webp';
+import Skywalker from '~/assets/Jonathan-Rey-Star-Wars-Characters-Luke-Skywalker-03.256.webp';
+import R2D2 from '~/assets/Jonathan-Rey-Star-Wars-Characters-R2D2-01.256.webp';
 import { Alert, AlertDescription, AlertTitle } from '~/components/ui/alert';
 import { Button } from '~/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '~/components/ui/card';
@@ -138,6 +141,15 @@ export function AlertDestructive({ msg }: { msg: Error }) {
   );
 }
 
+const characters = [Jonathan, Chewbacca, R2D2, Skywalker];
+
+const getRandomInteger = (min: number, max: number) => {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
 export interface ICharacter {
   name: string;
   height: number;
@@ -213,7 +225,7 @@ export function CharacterList() {
                       alt={name}
                       width={256}
                       height={256}
-                      src={Jonathan}
+                      src={characters[getRandomInteger(0, 4)]}
                     />
                     {/* <p>Card Content</p>
                   <p>{height}</p>
