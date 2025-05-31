@@ -4,25 +4,25 @@
 
 - React
 - TypeScript
-- Remix
-- TanStack Query
+- Next.js
+- [TanStack Query](https://tanstack.com/query/latest/docs/framework/react/overview)
 - TailwindCSS
-- Shadcn/UI
+- [Shadcn/UI](https://ui.shadcn.com)
 - Playwright
 - Vitest
 
 ## About
 
-It consists of two pages.
+There are two pages.
 The main page displays a list with character cards, the list has the ability to page through and search using API.
-The next page with detailed information about the selected character. On this page it is possible to edit and save information about the character locally without sending it to the server.
+The second page contains detailed information about the selected character. This page allows you to edit and save character information locally without sending it to the server.
 
 ## Development
 
 Run the dev server:
 
-```shellscript
-pnpm run dev
+```sh
+pnpm dev
 ```
 
 Open the url
@@ -36,7 +36,7 @@ http://localhost:5173/star-network/
 First, build your app for production:
 
 ```sh
-pnpm run build
+pnpm build
 ```
 
 Then run the app in production mode:
