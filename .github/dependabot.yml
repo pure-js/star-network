@@ -1,0 +1,33 @@
+version: 2
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      react:
+        patterns:
+          - 'react*'
+          - '@types/react*'
+        exclude-patterns:
+          - 'react-router'
+      react-router:
+        patterns:
+          - 'react-router'
+          - '@react-router/*'
+      storybook:
+        patterns:
+          - 'storybook*'
+          - '@storybook/*'
+      eslint:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+      nx:
+        patterns:
+          - '@nx/*'
+      vitest:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
